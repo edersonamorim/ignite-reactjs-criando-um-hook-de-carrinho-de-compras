@@ -20,10 +20,7 @@ interface Product {
 const Cart = (): JSX.Element => {
   const { cart, removeProduct, updateProductAmount } = useCart();
 
-  const cartFormatted = cart.map(product => ({
-     // TODO
-   }))
-   const total =
+  const total =
      formatPrice(
        cart.reduce((sumTotal, product) => {
          sumTotal += product.amount * product.price;
@@ -32,11 +29,15 @@ const Cart = (): JSX.Element => {
      )
 
   function handleProductIncrement(product: Product) {
-    
+    updateProductAmount({productId: product.id, amount: product.amount + 1});
   }
 
   function handleProductDecrement(product: Product) {
-    // TODO
+    if (product.amount === 1) {
+      removeProduct(product.id);
+    } else {
+      updateProductAmount({productId: product.id, amount: product.amount - 1});
+    }
   }
 
   function handleRemoveProduct(productId: number) {
@@ -57,13 +58,13 @@ const Cart = (): JSX.Element => {
         </thead>
         <tbody>
           {cart.map(p => (
-          <tr data-testid="product">
+          <tr data-testid="product" key={p.id}>
             <td>
               <img src={p.image} alt={p.title} />
             </td>
             <td>
               <strong>{p.title}</strong>
-              <span>{p.price}</span>
+              <span>{formatPrice(p.price)}</span>
             </td>
             <td>
               <div>
@@ -79,7 +80,7 @@ const Cart = (): JSX.Element => {
                   type="text"
                   data-testid="product-amount"
                   readOnly
-                  value={2}
+                  value={p.amount}
                 />
                 <button
                   type="button"
